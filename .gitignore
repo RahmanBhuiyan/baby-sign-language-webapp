@@ -20,3 +20,7 @@ Thumbs.db
 
 # Auto-downloaded model artifacts (fetched on first run)
 backend/models/
+
+# Capacitor generates this in CI; we don't commit it
+frontend/android/
+frontend/ios/

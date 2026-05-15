@@ -120,6 +120,43 @@ set PORT=8080 && python app.py     # cmd.exe
 
 ---
 
+## 📱 Android APK
+
+The app can also be installed as a native Android app. The APK is built by GitHub Actions — no Android Studio or JDK needed locally.
+
+### One-time setup
+
+1. **Host the backend somewhere reachable from your phone.** Options:
+   - Run `python app.py` on your PC; on your phone, use `http://<your-pc-LAN-ip>:5000` (same Wi-Fi).
+   - Or deploy `backend/` to a free Python host (Render, Railway, Fly).
+2. **Set the backend URL as a repository variable.** Go to **Settings → Secrets and variables → Actions → Variables**, then add:
+   - Name: `VITE_API_BASE`
+   - Value: e.g. `http://192.168.1.42:5000` or `https://baby-sign.example.com`
+
+### Build the APK
+
+Either push a commit (the workflow triggers on changes under `frontend/`) **or** manually:
+
+1. Go to the **Actions** tab → **Build Android APK** → **Run workflow**.
+2. Optionally override the API URL in the input box.
+3. Wait ~3–5 minutes. Download `baby-sign-helper-debug-apk` from the run's artifacts.
+4. Transfer the `.apk` to your phone, allow "install from unknown sources", and tap to install.
+
+### What the workflow does
+
+| Step | Detail |
+|---|---|
+| 1 | Checkout, set up Node 20 + JDK 21 + Android SDK |
+| 2 | `npm ci && npm run build` (with `VITE_API_BASE` baked in) |
+| 3 | `npx cap add android && npx cap sync` — generates the Android project from the built Vue app |
+| 4 | Patches `AndroidManifest.xml` to add `CAMERA` permission |
+| 5 | `./gradlew assembleDebug` — builds the APK |
+| 6 | Uploads `app-debug.apk` as a workflow artifact |
+
+The Android project (`frontend/android/`) is **not committed** — it's regenerated on every CI run.
+
+---
+
 ## 🧠 How the UI thinks
 
 | Confidence | UI behaviour |
