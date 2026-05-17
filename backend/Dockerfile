@@ -8,6 +8,8 @@ FROM python:3.11-slim
 # --- OS deps (must run as root) ---------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libgl1 \
+        libgles2 \
+        libegl1 \
         libglib2.0-0 \
         ca-certificates \
         curl \
