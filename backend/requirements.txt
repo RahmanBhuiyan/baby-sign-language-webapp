@@ -7,3 +7,4 @@ mediapipe>=0.10.30
 pillow>=10.0
 numpy>=1.26
 requests>=2.31
+gunicorn>=22.0
