@@ -36,19 +36,13 @@ RUN pip install --no-cache-dir --user \
 # --- App source --------------------------------------------------------
 COPY --chown=appuser:appuser model_loader.py hand_detector.py inference.py app.py ./
 
-# --- Pre-bake models into the image -----------------------------------
-# Trigger both auto-download paths at build time so the first user
-# request doesn't pay the 44 MB ResNet weights + 8 MB MediaPipe task
-# download cost (and doesn't race the gunicorn worker timeout).
-RUN python -c "from model_loader import get_model; from hand_detector import get_detector; get_model(); get_detector(); print('Models pre-loaded.')"
-
 EXPOSE 7860
 
-CMD ["python", "-m", "gunicorn", \
-     "--workers", "1", \
-     "--worker-class", "gthread", \
-     "--threads", "4", \
-     "--bind", "0.0.0.0:7860", \
-     "--timeout", "120", \
-     "--access-logfile", "-", \
-     "app:app"]
+# --- Startup -----------------------------------------------------------
+# Pre-load both models BEFORE binding the port. HF Spaces' build
+# sandbox blocks outbound HTTP, so we can't bake the models into the
+# image at build time. Instead we download them on the first container
+# boot (which takes ~30 s), and gunicorn only starts accepting requests
+# after the load is done. That way /api/predict never has to wait on
+# a download — the very first request gets a fast response.
+CMD ["sh", "-c", "python -u -c 'from model_loader import get_model; from hand_detector import get_detector; print(\"Loading models...\", flush=True); get_model(); get_detector(); print(\"Models ready.\", flush=True)' && exec python -m gunicorn --workers 1 --worker-class gthread --threads 4 --bind 0.0.0.0:7860 --timeout 120 --access-logfile - app:app"]
