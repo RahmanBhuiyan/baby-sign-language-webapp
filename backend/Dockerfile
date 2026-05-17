@@ -36,11 +36,12 @@ RUN pip install --no-cache-dir --user \
 # --- App source --------------------------------------------------------
 COPY --chown=appuser:appuser model_loader.py hand_detector.py inference.py app.py ./
 
-# --- Runtime ----------------------------------------------------------
-# Both model files (44 MB ResNet weights + 8 MB MediaPipe task) are
-# auto-downloaded on first request via the existing _ensure_weights()
-# and _ensure_model_file() helpers. That takes ~30 s once per container
-# lifetime.
+# --- Pre-bake models into the image -----------------------------------
+# Trigger both auto-download paths at build time so the first user
+# request doesn't pay the 44 MB ResNet weights + 8 MB MediaPipe task
+# download cost (and doesn't race the gunicorn worker timeout).
+RUN python -c "from model_loader import get_model; from hand_detector import get_detector; get_model(); get_detector(); print('Models pre-loaded.')"
+
 EXPOSE 7860
 
 CMD ["python", "-m", "gunicorn", \
