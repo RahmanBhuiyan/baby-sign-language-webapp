@@ -18,7 +18,7 @@ async function start() {
   cameraError.value = null
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
       audio: false
     })
     videoEl.value.srcObject = stream
@@ -80,7 +80,6 @@ video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); /* mirror like a selfie */
 }
 .start-btn {
   position: absolute;
