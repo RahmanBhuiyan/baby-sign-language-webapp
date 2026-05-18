@@ -198,12 +198,27 @@ baby-sign-language-webapp/
 │     │  ├─ useSpeech.js
 │     │  └─ useHistory.js
 │     └─ constants/labels.js
-└─ docs/
-   ├─ hero.png
-   ├─ architecture.png
-   ├─ features.png
-   └─ signs-grid.png
+├─ docs/
+│  ├─ hero.png
+│  ├─ architecture.png
+│  ├─ features.png
+│  └─ signs-grid.png
+└─ system-design/
+   ├─ baby-sign-helper-system-design.pdf   ← 12-section design doc
+   ├─ baby-sign-helper-system-design.xlsx  ← same content, one sheet per topic
+   └─ generate.py                          ← regenerates both from one data source
 ```
+
+---
+
+## 📐 System design docs
+
+Detailed system design — architecture, components, tech stack, API spec, model details, data flow, deployment topology — is published in two equivalent formats:
+
+- **[`system-design/baby-sign-helper-system-design.pdf`](system-design/baby-sign-helper-system-design.pdf)** — 12-section A4 document with the architecture and signs-grid diagrams embedded.
+- **[`system-design/baby-sign-helper-system-design.xlsx`](system-design/baby-sign-helper-system-design.xlsx)** — same content as 11 sortable/filterable sheets.
+
+Both are regenerated from `system-design/generate.py` so the single data dictionary at the top of that script is the source of truth.
 
 ---
 
